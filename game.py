@@ -21,7 +21,7 @@ class Game():
     duckSize = 40
     crossHairSize = 30
     startTime = 0
-    timeLimit = 30000
+    timeLimit = 10000
     def __init__(self):
         self.loop = GameTimer(self.tick, 10)
         self.screen = self.configureScreen()
@@ -38,9 +38,9 @@ class Game():
         pygame.display.update()
 
     def draw(self):
-        self.screen.fill((50, 50, 200))
+        self.screen.fill((150, 220, 235))
         grass = pygame.Rect(0, self.screenY - self.screenY/5, self.screenX, self.screenY)
-        pygame.draw.rect(self.screen, (0, 150, 0), grass, 0)
+        pygame.draw.rect(self.screen, (50, 175, 50), grass, 0)
         upcross = pygame.Rect(self.playerX - 2, self.playerY - self.crossHairSize, 4, self.crossHairSize*2)
         sidecross = pygame.Rect(self.playerX - self.crossHairSize, self.playerY - 2, self.crossHairSize*2, 4)
         pygame.draw.rect(self.screen, (255, 50, 0), upcross, 0)
@@ -63,10 +63,10 @@ class Game():
         # render text
         self.timeLeft = self.timeLimit - (self.timeInMillis() - self.startTime)
         secondsTotal = self.timeLeft / 1000
-        seconds = int(secondsTotal %60)
-        minutes = int(secondsTotal/60)
+        seconds = str(int(secondsTotal %60))
+        minutes = str(int(secondsTotal/60))
         scoreLabel = myfont.render("Score: {}".format(self.score), 1, (255,0,0))
-        timeLabel = myfont.render("{} : {}".format(minutes, seconds), 1, (255,0,0))
+        timeLabel = myfont.render("{} : {}".format(minutes, seconds.zfill(2)), 1, (255,0,0))
         self.screen.blit(scoreLabel, (10, 10))
         self.screen.blit(timeLabel, (10, 40))
 
