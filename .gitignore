@@ -49,3 +49,4 @@ Temporary Items
 #Ignoring pycharm stuff
 __pycache__/
 .idea/
+*.pyc
