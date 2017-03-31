@@ -3,7 +3,7 @@ from gametime import GameTimer
 from duck import Duck
 
 
-class Game():
+class Game(): #Game Object
     playerX = 0
     playerY = 0
     screenX = 600
@@ -22,45 +22,65 @@ class Game():
     crossHairSize = 30
     startTime = 0
     timeLimit = 10000
+    gameState = "menu"
     def __init__(self):
         self.loop = GameTimer(self.tick, 10)
         self.screen = self.configureScreen()
 
-    def start(self):
-        self.startTime = self.timeInMillis()
+    def start(self): #starts the game loop
         self.loop.start()
 
-    def tick(self):
-        self.generateDucks()
+    def tick(self): #this is called every loop
         self.eventCatcher()
-        self.physics()
-        self.draw()
+        self.stateCycle()
         pygame.display.update()
 
+    def stateCycle(self,): #does stuff based on the current state
+        if(self.gameState == "menu"):
+            self.drawMenu()
+            if(self.KEY_SHOOT): #advancing to the next state
+                self.gameState = "run"
+                self.startTime = self.timeInMillis() #starting the in-game "timer"
+        elif(self.gameState == "run"):
+            self.physics()
+            self.generateDucks()
+            self.draw()
+
+    def drawMenu(self):
+        self.screen.fill((150, 220, 235))
+        myfont = pygame.font.SysFont("monospace", 20)
+        scoreLabel = myfont.render("[Original Title Here]", 1, (255,0,0))
+        timeLabel = myfont.render("Insert Coin (Press Space)", 1, (255,0,0))
+        self.screen.blit(scoreLabel, (10, 10))
+        self.screen.blit(timeLabel, (10, 40))
+
     def draw(self):
+        #background
         self.screen.fill((150, 220, 235))
         grass = pygame.Rect(0, self.screenY - self.screenY/5, self.screenX, self.screenY)
         pygame.draw.rect(self.screen, (50, 175, 50), grass, 0)
+
+        #crosshair
         upcross = pygame.Rect(self.playerX - 2, self.playerY - self.crossHairSize, 4, self.crossHairSize*2)
         sidecross = pygame.Rect(self.playerX - self.crossHairSize, self.playerY - 2, self.crossHairSize*2, 4)
         pygame.draw.rect(self.screen, (255, 50, 0), upcross, 0)
         pygame.draw.rect(self.screen, (255, 50, 0), sidecross, 0)
-
         crosssquare = pygame.Rect(self.playerX - self.crossHairSize/2, self.playerY - self.crossHairSize/2, self.crossHairSize, self.crossHairSize)
         pygame.draw.circle(self.screen, (255, 0, 0), (self.playerX, self.playerY),  self.crossHairSize-6, 3)
 
+        #duck drawing
         crosshair = pygame.Rect(self.playerX, self.playerY, 1, 1)
-        print(len(self.duckList))
         for duck in self.duckList:
             duckDraw = pygame.Rect(duck.getX(), duck.getY(), self.duckSize, self.duckSize)
             pygame.draw.rect(self.screen, (255, 255, 100), duckDraw, 0)
+            #collision detection
             if(self.KEY_SHOOT):
                 if(duckDraw.colliderect(crosshair)):
                     self.duckList.remove(duck)
                     self.score+=1
 
+        #game text
         myfont = pygame.font.SysFont("monospace", 20)
-        # render text
         self.timeLeft = self.timeLimit - (self.timeInMillis() - self.startTime)
         secondsTotal = self.timeLeft / 1000
         seconds = str(int(secondsTotal %60))

@@ -11,7 +11,7 @@ class GameTimer(object):
 
     def start(self):
         self.shouldBeRunning = True
-        print("Loop starting...")
+        print("Game loop starting...")
         while self.shouldBeRunning:
             if(time.time() * 1000 - self.lastTimeTicked >= self.interval):
                 self.lastTimeTicked = time.time() * 1000
